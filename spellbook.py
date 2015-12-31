@@ -9,8 +9,18 @@ CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
 DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
 
 
+def search_spell(what):
+    with open(DATABASE_FILE, 'rt') as fin:
+        for line in fin:
+            obj = json.loads(line)
+            for word in what:
+                if word in obj['cmd'] or word in obj['desc']:
+                    print(obj['cmd'])
+                    break
+
+
 def command_search(args):
-    print('command search')
+    search_spell(args.data)
 
 
 def collect_str(what):
@@ -23,13 +33,12 @@ def save_spell(cmd, desc):
         'cmd': cmd,
         'desc': desc
     }
-    with open(DATABASE_FILE, 'at') as f:
-        f.write(json.dumps(val))
+    with open(DATABASE_FILE, 'at') as fout:
+        fout.write(json.dumps(val))
+        fout.write('\n')
 
 
 def command_add(args):
-    print('command add')
-
     data = args.data
 
     if len(data) == 2:
@@ -55,10 +64,11 @@ def prepare_argparse():
 
     parser_search = subparsers.add_parser('search')
     parser_search.set_defaults(func=command_search)
+    parser_search.add_argument('data', nargs='*')
 
     parser_add = subparsers.add_parser('add', aliases=['a'])
     parser_add.set_defaults(func=command_add)
-    parser_add.add_argument('data', default=None, nargs='*')
+    parser_add.add_argument('data', nargs='*')
 
     return parser
 
@@ -66,7 +76,6 @@ def prepare_argparse():
 def main():
     parser = prepare_argparse()
     args = parser.parse_args()
-    print(args)
     args.func(args)
 
 
