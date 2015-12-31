@@ -58,6 +58,13 @@ def command_add(args):
     save_spell(cmd, desc)
 
 
+def command_list(args):
+    with open(DATABASE_FILE, 'rt') as fin:
+        for line in fin:
+            obj = json.loads(line)
+            print(obj['cmd'], obj['desc'], sep='\t::>>\t')
+
+
 def prepare_argparse():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command_name')
@@ -69,6 +76,9 @@ def prepare_argparse():
     parser_add = subparsers.add_parser('add', aliases=['a'])
     parser_add.set_defaults(func=command_add)
     parser_add.add_argument('data', nargs='*')
+
+    parser_search = subparsers.add_parser('list')
+    parser_search.set_defaults(func=command_list)
 
     return parser
 
