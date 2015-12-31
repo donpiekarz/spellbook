@@ -69,7 +69,7 @@ def prepare_argparse():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command_name')
 
-    parser_search = subparsers.add_parser('search')
+    parser_search = subparsers.add_parser('search', aliases=['s'])
     parser_search.set_defaults(func=command_search)
     parser_search.add_argument('data', nargs='*')
 
@@ -77,7 +77,7 @@ def prepare_argparse():
     parser_add.set_defaults(func=command_add)
     parser_add.add_argument('data', nargs='*')
 
-    parser_search = subparsers.add_parser('list')
+    parser_search = subparsers.add_parser('list', aliases=['l'])
     parser_search.set_defaults(func=command_list)
 
     return parser
