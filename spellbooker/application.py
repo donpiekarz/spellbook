@@ -67,7 +67,7 @@ def command_list(args):
             print(obj['cmd'], obj['desc'], sep='\t::>>\t')
 
 
-def prepare_argparse():
+def prepare_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command_name')
 
@@ -86,10 +86,13 @@ def prepare_argparse():
 
 
 def main():
-    parser = prepare_argparse()
+    parser = prepare_parser()
     args = parser.parse_args()
-    args.func(args)
 
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
 
 if __name__ == '__main__':
     main()
