@@ -12,7 +12,7 @@ DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
 
 
 def search_spell(what):
-    with open(DATABASE_FILE, 'rt') as fin:
+    with open(DATABASE_FILE, 'rU') as fin:
         for line in fin:
             obj = json.loads(line)
             for word in what:
@@ -35,7 +35,7 @@ def save_spell(cmd, desc):
         'cmd': cmd,
         'desc': desc
     }
-    with open(DATABASE_FILE, 'at') as fout:
+    with open(DATABASE_FILE, 'aU') as fout:
         fout.write(json.dumps(val))
         fout.write('\n')
 
@@ -61,7 +61,7 @@ def command_add(args):
 
 
 def command_list(args):
-    with open(DATABASE_FILE, 'rt') as fin:
+    with open(DATABASE_FILE, 'rU') as fin:
         for line in fin:
             obj = json.loads(line)
             print(obj['cmd'], obj['desc'], sep='\t::>>\t')
