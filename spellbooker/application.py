@@ -11,8 +11,26 @@ CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
 DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
 
 
-def search_spell(what):
-    with open(DATABASE_FILE, 'rU') as fin:
+def collect_str(what):
+    result = input("provide %s>> " % what)
+    return result
+
+
+def load_config(config_file):
+    with open(config_file, 'rU') as fin:
+        conf = json.load(fin)
+    return conf
+
+
+def list_spell(database_path):
+    with open(database_path, 'rU') as fin:
+        for line in fin:
+            obj = json.loads(line)
+            print(obj['cmd'], obj['desc'], sep='\t::>>\t')
+
+
+def search_spell(database_path, what):
+    with open(database_path, 'rU') as fin:
         for line in fin:
             obj = json.loads(line)
             for word in what:
@@ -21,23 +39,18 @@ def search_spell(what):
                     break
 
 
-def command_search(args):
-    search_spell(args.data)
-
-
-def collect_str(what):
-    result = input("provide %s>> " % what)
-    return result
-
-
-def save_spell(cmd, desc):
+def save_spell(database_path, cmd, desc):
     val = {
         'cmd': cmd,
         'desc': desc
     }
-    with open(DATABASE_FILE, 'aU') as fout:
+    with open(database_path, 'aU') as fout:
         fout.write(json.dumps(val))
         fout.write('\n')
+
+
+def command_search(args):
+    search_spell(DATABASE_FILE, args.data)
 
 
 def command_add(args):
@@ -57,14 +70,11 @@ def command_add(args):
         return
 
     print("%s::%s" % (cmd, desc))
-    save_spell(cmd, desc)
+    save_spell(DATABASE_FILE, cmd, desc)
 
 
 def command_list(args):
-    with open(DATABASE_FILE, 'rU') as fin:
-        for line in fin:
-            obj = json.loads(line)
-            print(obj['cmd'], obj['desc'], sep='\t::>>\t')
+    list_spell(DATABASE_FILE)
 
 
 def prepare_parser():
