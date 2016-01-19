@@ -45,7 +45,7 @@ def save_spell(database_path, cmd, desc):
         'cmd': cmd,
         'desc': desc
     }
-    with open(database_path, 'aU') as fout:
+    with open(database_path, 'a') as fout:
         fout.write(json.dumps(val))
         fout.write('\n')
 
@@ -53,6 +53,9 @@ def save_spell(database_path, cmd, desc):
 def wrap_optional_spellbook(func, args):
     if args.spellbook_name is not None:
         database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
+        if not os.path.isfile(database_path):
+            print("ERR: no such spellbook")
+            return
         func(database_path, args)
     else:
         for p in filter(lambda f: os.path.isfile(os.path.join(MAIN_DIRECTORY, f)), os.listdir(MAIN_DIRECTORY)):
@@ -84,11 +87,24 @@ def command_add(args):
         return
 
     print("%s::%s" % (cmd, desc))
-    save_spell(DATABASE_FILE, cmd, desc)
+    save_spell(database_path, cmd, desc)
 
 
 def command_list(args):
     wrap_optional_spellbook(list_spell, args)
+
+
+def command_create(args):
+    if args.spellbook_name is None:
+        print("ERR: please set new spellbook name")
+        return
+    database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
+    if os.path.isfile(database_path):
+        print("ERR: such spellbook already exist")
+        return
+
+    # create empty file
+    open(database_path, 'a').close()
 
 
 def prepare_parser():
@@ -107,13 +123,14 @@ def prepare_parser():
     parser_search = subparsers.add_parser('list', aliases=['l'])
     parser_search.set_defaults(func=command_list)
 
+    parser_create = subparsers.add_parser('create', aliases=['c'])
+    parser_create.set_defaults(func=command_create)
+
     return parser
 
 
 def validate_parser(parser):
     args = parser.parse_args()
-
-    print(args.spellbook_name)
 
     if args.spellbook_name == '-':
         args.spellbook_name = None
