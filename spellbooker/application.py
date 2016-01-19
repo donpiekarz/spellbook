@@ -22,14 +22,15 @@ def load_config(config_file):
     return conf
 
 
-def list_spell(database_path):
+def list_spell(database_path, _):
     with open(database_path, 'rU') as fin:
         for line in fin:
             obj = json.loads(line)
             print(obj['cmd'], obj['desc'], sep='\t::>>\t')
 
 
-def search_spell(database_path, what):
+def search_spell(database_path, args):
+    what = args.data
     with open(database_path, 'rU') as fin:
         for line in fin:
             obj = json.loads(line)
@@ -49,12 +50,25 @@ def save_spell(database_path, cmd, desc):
         fout.write('\n')
 
 
+def wrap_optional_spellbook(func, args):
+    if args.spellbook_name is not None:
+        database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
+        func(database_path, args)
+    else:
+        for p in filter(lambda f: os.path.isfile(os.path.join(MAIN_DIRECTORY, f)), os.listdir(MAIN_DIRECTORY)):
+            func(os.path.join(MAIN_DIRECTORY, p), args)
+
+
 def command_search(args):
-    search_spell(DATABASE_FILE, args.data)
+    wrap_optional_spellbook(search_spell, args)
 
 
 def command_add(args):
     data = args.data
+    database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
+    if not os.path.isfile(database_path):
+        print("ERR: no such spellbook")
+        return
 
     if len(data) == 2:
         cmd = data[0]
@@ -74,11 +88,12 @@ def command_add(args):
 
 
 def command_list(args):
-    list_spell(DATABASE_FILE)
+    wrap_optional_spellbook(list_spell, args)
 
 
 def prepare_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('spellbook_name')
     subparsers = parser.add_subparsers(dest='command_name')
 
     parser_search = subparsers.add_parser('search', aliases=['s'])
@@ -95,14 +110,26 @@ def prepare_parser():
     return parser
 
 
+def validate_parser(parser):
+    args = parser.parse_args()
+
+    print(args.spellbook_name)
+
+    if args.spellbook_name == '-':
+        args.spellbook_name = None
+
+    return args
+
+
 def main():
     parser = prepare_parser()
-    args = parser.parse_args()
+    args = validate_parser(parser)
 
     if hasattr(args, 'func'):
         args.func(args)
     else:
         parser.print_help()
+
 
 if __name__ == '__main__':
     main()
