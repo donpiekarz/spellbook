@@ -57,7 +57,7 @@ def wrap_optional_spellbook(func, args):
     if args.spellbook_name is not None:
         database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
         if not os.path.isfile(database_path):
-            print("ERR: no such spellbook")
+            print("ERR: no such spellbook: %s" % args.spellbook_name)
             return
         func(database_path, args)
     else:
@@ -73,7 +73,7 @@ def command_add(args):
     data = args.data
     database_path = os.path.join(MAIN_DIRECTORY, args.spellbook_name)
     if not os.path.isfile(database_path):
-        print("ERR: no such spellbook")
+        print("ERR: no such spellbook: %s" % args.spellbook_name)
         return
 
     if len(data) == 2:
