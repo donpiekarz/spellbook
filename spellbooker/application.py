@@ -124,11 +124,23 @@ def prepare_parser():
     parser_add.set_defaults(func=command_add)
     parser_add.add_argument('data', nargs='*')
 
-    parser_search = subparsers.add_parser('list')
-    parser_search.set_defaults(func=command_list)
+    parser_list = subparsers.add_parser('list')
+    parser_list.set_defaults(func=command_list)
 
     parser_create = subparsers.add_parser('create')
     parser_create.set_defaults(func=command_create)
+
+    # hacks for lack of aliases for python 2
+    parser_s = subparsers.add_parser('s')
+    parser_s.set_defaults(func=command_search)
+    parser_s.add_argument('data', nargs='*')
+
+    parser_a = subparsers.add_parser('a')
+    parser_a.set_defaults(func=command_add)
+    parser_a.add_argument('data', nargs='*')
+
+    parser_l = subparsers.add_parser('l')
+    parser_l.set_defaults(func=command_list)
 
     return parser
 
