@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import setuptools
-
 from distutils.core import setup
+
+from spellbooker.application import VERSION
 
 setup(
         name='spellbook',
-        version='1.0.0',
+        version=VERSION,
         packages=['spellbooker'],
         url='https://github.com/donpiekarz/spellbook',
         license='BSD',

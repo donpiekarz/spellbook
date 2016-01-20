@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import argparse
 import json
@@ -9,6 +10,8 @@ if not os.path.exists(MAIN_DIRECTORY):
     os.makedirs(MAIN_DIRECTORY)
 CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
 DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
+
+VERSION = '1.0.0'
 
 
 def collect_str(what):
@@ -109,21 +112,22 @@ def command_create(args):
 
 def prepare_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
     parser.add_argument('spellbook_name')
     subparsers = parser.add_subparsers(dest='command_name')
 
-    parser_search = subparsers.add_parser('search', aliases=['s'])
+    parser_search = subparsers.add_parser('search')
     parser_search.set_defaults(func=command_search)
     parser_search.add_argument('data', nargs='*')
 
-    parser_add = subparsers.add_parser('add', aliases=['a'])
+    parser_add = subparsers.add_parser('add')
     parser_add.set_defaults(func=command_add)
     parser_add.add_argument('data', nargs='*')
 
-    parser_search = subparsers.add_parser('list', aliases=['l'])
+    parser_search = subparsers.add_parser('list')
     parser_search.set_defaults(func=command_list)
 
-    parser_create = subparsers.add_parser('create', aliases=['c'])
+    parser_create = subparsers.add_parser('create')
     parser_create.set_defaults(func=command_create)
 
     return parser
