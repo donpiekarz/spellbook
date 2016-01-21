@@ -11,7 +11,7 @@ if not os.path.exists(MAIN_DIRECTORY):
 CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
 DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 
 def collect_str(what):
