@@ -9,7 +9,7 @@ from spellbooker.application import VERSION
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the README file
-with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.rst'), 'rU') as f:
     long_description = f.read()
 
 setup(
@@ -19,7 +19,7 @@ setup(
         url='https://github.com/donpiekarz/spellbook',
         download_url='https://github.com/donpiekarz/spellbook/tarball/1.0.0',
         license='BSD',
-        author='Bartłomiej Piekarski',
+        author='Bartlomiej Piekarski',
         author_email='bartlomiej.piekarski@gmail.com',
         description='store and search command lines',
         long_description=long_description,
