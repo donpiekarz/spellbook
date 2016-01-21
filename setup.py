@@ -17,6 +17,7 @@ setup(
         version=VERSION,
         packages=['spellbooker'],
         url='https://github.com/donpiekarz/spellbook',
+        download_url='https://github.com/peterldowns/mypackage/tarball/1.0.0',
         license='BSD',
         author='Bartłomiej Piekarski',
         author_email='bartlomiej.piekarski@gmail.com',
