@@ -11,7 +11,7 @@ if not os.path.exists(MAIN_DIRECTORY):
 CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
 DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 
 def collect_str(what):
@@ -113,33 +113,33 @@ def command_create(args):
 def prepare_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
-    parser.add_argument('spellbook_name')
+    parser.add_argument('spellbook_name', help='name of spellbook')
     subparsers = parser.add_subparsers(dest='command_name')
 
-    parser_search = subparsers.add_parser('search')
+    parser_search = subparsers.add_parser('search', help='search for spells')
     parser_search.set_defaults(func=command_search)
     parser_search.add_argument('data', nargs='*')
 
-    parser_add = subparsers.add_parser('add')
+    parser_add = subparsers.add_parser('add', help='add spell')
     parser_add.set_defaults(func=command_add)
     parser_add.add_argument('data', nargs='*')
 
-    parser_list = subparsers.add_parser('list')
+    parser_list = subparsers.add_parser('list', help='list all spells')
     parser_list.set_defaults(func=command_list)
 
-    parser_create = subparsers.add_parser('create')
+    parser_create = subparsers.add_parser('create', help='create new spellbook')
     parser_create.set_defaults(func=command_create)
 
     # hacks for lack of aliases for python 2
-    parser_s = subparsers.add_parser('s')
+    parser_s = subparsers.add_parser('s', help='shortcut for search')
     parser_s.set_defaults(func=command_search)
     parser_s.add_argument('data', nargs='*')
 
-    parser_a = subparsers.add_parser('a')
+    parser_a = subparsers.add_parser('a', help='shortcut for add')
     parser_a.set_defaults(func=command_add)
     parser_a.add_argument('data', nargs='*')
 
-    parser_l = subparsers.add_parser('l')
+    parser_l = subparsers.add_parser('l', help='shortcut for list')
     parser_l.set_defaults(func=command_list)
 
     return parser
