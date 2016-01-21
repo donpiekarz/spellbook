@@ -19,7 +19,7 @@ setup(
         url='https://github.com/donpiekarz/spellbook',
         download_url='https://github.com/donpiekarz/spellbook/tarball/1.0.0',
         license='BSD',
-        author=u'Bartłomiej Piekarski',
+        author='Bartłomiej Piekarski',
         author_email='bartlomiej.piekarski@gmail.com',
         description='store and search command lines',
         long_description=long_description,
