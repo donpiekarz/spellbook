@@ -5,24 +5,30 @@ import argparse
 import json
 import os
 
-MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
-if not os.path.exists(MAIN_DIRECTORY):
-    os.makedirs(MAIN_DIRECTORY)
-CONFIG_FILE = os.path.join(MAIN_DIRECTORY, 'config')
-DATABASE_FILE = os.path.join(MAIN_DIRECTORY, 'database')
+from dropbox.files import WriteMode
 
 VERSION = '1.0.2'
 
+MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
+CONFIG_DIRECTORY = os.path.join(MAIN_DIRECTORY, 'config')
+if not os.path.exists(CONFIG_DIRECTORY):
+    os.makedirs(CONFIG_DIRECTORY)
+
+try:
+    import dropbox
+
+    DROPBOX_TOKEN_PATH = os.path.join(CONFIG_DIRECTORY, 'dropbox_token')
+    DROPBOX_REPO_PATH = os.path.join(MAIN_DIRECTORY, 'dropbox_repo')
+    if not os.path.exists(DROPBOX_REPO_PATH):
+        os.makedirs(DROPBOX_REPO_PATH)
+except ImportError as e:
+    dropbox = None
+    pass
+
 
 def collect_str(what):
-    result = input("provide %s>> " % what)
+    result = input("provide %s>> " % what).strip()
     return result
-
-
-def load_config(config_file):
-    with open(config_file, 'rU') as fin:
-        conf = json.load(fin)
-    return conf
 
 
 def list_spell(database_path, _):
@@ -110,6 +116,118 @@ def command_create(args):
     open(database_path, 'a').close()
 
 
+def command_dropbox_connect(args):
+    app_key = 'ow3gosk8pb9bhkr'
+    app_secret = 'w3eqoqx5scb64pd'
+    flow = dropbox.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
+    # Have the user sign in and authorize this token
+    authorize_url = flow.start()
+    print('1. Go to: ' + authorize_url)
+    print('2. Click "Allow" (you might have to log in first)')
+    print('3. Copy the authorization code.')
+    code = collect_str("the authorization code here")
+
+    # This will fail if the user enters an invalid authorization code
+    access_token, user_id = flow.finish(code)
+
+    client = dropbox.Dropbox(access_token)
+    print('successfully linked account: ', client.users_get_current_account().name.display_name)
+    with open(DROPBOX_TOKEN_PATH, 'w') as fout:
+        fout.write(access_token)
+
+
+def db_repo_load():
+    repo = {}
+    for file_name in os.listdir(DROPBOX_REPO_PATH):
+        with open(os.path.join(DROPBOX_REPO_PATH, file_name), 'rU') as fin:
+            repo[file_name] = fin.read()
+
+    for file_name in os.listdir(MAIN_DIRECTORY):
+        if os.path.isfile(os.path.join(MAIN_DIRECTORY, file_name)) and file_name not in repo:
+            repo[file_name] = None
+
+    return repo
+
+
+def db_repo_update(spellbook_name, rev):
+    spellbook_path = os.path.join(DROPBOX_REPO_PATH, spellbook_name)
+    with open(spellbook_path, 'w') as fout:
+        fout.write(rev)
+
+
+def db_repo_removed_list():
+    removed = []
+    for file_name in os.listdir(DROPBOX_REPO_PATH):
+        if not os.path.isfile(os.path.join(MAIN_DIRECTORY, file_name)):
+            removed.append(file_name)
+
+    return removed
+
+
+def db_repo_remove(spellbook_name):
+    spellbook_path = os.path.join(DROPBOX_REPO_PATH, spellbook_name)
+    os.remove(spellbook_path)
+
+
+def db_load_token():
+    return open(DROPBOX_TOKEN_PATH, 'rU').read()
+
+
+def db_sync():
+    dbx = dropbox.Dropbox(db_load_token())
+    repo = db_repo_load()
+    for book in dbx.files_list_folder('').entries:
+        if book.name not in repo:
+            db_download(dbx, book.name)
+        elif repo[book.name] != book.rev:
+            db_download(dbx, book.name)
+            repo.pop(book.name)
+        elif repo[book.name] == book.rev:
+            repo.pop(book.name)
+            pass
+        else:
+            db_update(dbx, book.name, book.rev)
+            repo.pop(book.name)
+
+    for spellbook_name in repo:
+        if repo[spellbook_name] is None:
+            db_upload(dbx, spellbook_name)
+
+    for spellbook_name in db_repo_removed_list():
+        db_remove(dbx, spellbook_name)
+
+
+def db_upload(dbx, spellbook_name):
+    spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
+    with open(spellbook_path, 'rU') as fout:
+        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=WriteMode.add)
+
+    db_repo_update(spellbook_name, response.rev)
+
+
+def db_update(dbx, spellbook_name, rev):
+    spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
+    with open(spellbook_path, 'rU') as fout:
+        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=WriteMode.update(rev))
+
+    db_repo_update(spellbook_name, response.rev)
+
+
+def db_remove(dbx, spellbook_name):
+    dbx.files_delete(os.path.join('/', spellbook_name))
+    db_repo_remove(spellbook_name)
+
+
+def db_download(dbx, spellbook_name):
+    spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
+    response = dbx.files_download_to_file(spellbook_path, os.path.join('/', spellbook_name))
+    db_repo_update(spellbook_name, response.rev)
+
+
+def command_dropbox_sync(args):
+    db_sync()
+
+
 def prepare_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version='%(prog)s ' + VERSION)
@@ -129,6 +247,13 @@ def prepare_parser():
 
     parser_create = subparsers.add_parser('create', help='create new spellbook')
     parser_create.set_defaults(func=command_create)
+
+    if dropbox:
+        parser_db_connect = subparsers.add_parser('connectdb', help='connect to dropbox storage')
+        parser_db_connect.set_defaults(func=command_dropbox_connect)
+
+        parser_db_sync = subparsers.add_parser('sync', help='sync to dropbox storage')
+        parser_db_sync.set_defaults(func=command_dropbox_sync)
 
     # hacks for lack of aliases for python 2
     parser_s = subparsers.add_parser('s', help='shortcut for search')
