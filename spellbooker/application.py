@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-from __future__ import print_function, unicode_literals
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
 
 import argparse
 import json
 import os
+from builtins import *
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 
 MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
 CONFIG_DIRECTORY = os.path.join(MAIN_DIRECTORY, 'config')

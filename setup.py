@@ -12,6 +12,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst'), 'rU') as f:
     long_description = f.read()
 
+required = [
+    'future'
+]
+
 extras = {
     'with_dropbox': ['dropbox>=4.0.0']
 }
@@ -30,6 +34,7 @@ setup(
         entry_points={
             'console_scripts': ['spellbook = spellbooker.application:main']
         },
+    install_requires=required,
         extras_require=extras,
         classifiers=[
             # How mature is this project? Common values are
