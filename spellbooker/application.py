@@ -117,6 +117,10 @@ def command_create(args):
 
 
 def command_dropbox_connect(args):
+    if args.spellbook_name is not None:
+        print('ERR: sync is only for all books')
+        return
+
     app_key = 'ow3gosk8pb9bhkr'
     app_secret = 'w3eqoqx5scb64pd'
     flow = dropbox.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
@@ -243,6 +247,9 @@ def db_download(dbx, spellbook_name):
 
 
 def command_dropbox_sync(args):
+    if args.spellbook_name is not None:
+        print('ERR: sync is only for all books')
+        return
     db_sync()
 
 
