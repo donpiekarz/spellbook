@@ -5,8 +5,6 @@ import argparse
 import json
 import os
 
-from dropbox.files import WriteMode
-
 VERSION = '1.1.0'
 
 MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
@@ -205,7 +203,7 @@ def db_sync():
 def db_upload(dbx, spellbook_name):
     spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
     with open(spellbook_path, 'rU') as fout:
-        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=WriteMode.add)
+        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=dropbox.files.WriteMode.add)
 
     db_repo_update(spellbook_name, response.rev)
 
@@ -213,7 +211,7 @@ def db_upload(dbx, spellbook_name):
 def db_update(dbx, spellbook_name, rev):
     spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
     with open(spellbook_path, 'rU') as fout:
-        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=WriteMode.update(rev))
+        response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=dropbox.files.WriteMode.update(rev))
 
     db_repo_update(spellbook_name, response.rev)
 
