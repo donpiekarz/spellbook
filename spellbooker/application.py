@@ -7,7 +7,7 @@ import os
 
 from dropbox.files import WriteMode
 
-VERSION = '1.0.2'
+VERSION = '1.1.0'
 
 MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
 CONFIG_DIRECTORY = os.path.join(MAIN_DIRECTORY, 'config')
