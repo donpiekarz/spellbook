@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import argparse
 import json
@@ -180,14 +180,15 @@ def db_sync():
         if book.name not in repo:
             db_download(dbx, book.name)
         elif repo[book.name] != book.rev:
-            db_download(dbx, book.name)
-            repo.pop(book.name)
-        elif repo[book.name] == book.rev:
-            repo.pop(book.name)
-            pass
-        else:
+            db_merge(dbx, book.name, book.rev)
             db_update(dbx, book.name, book.rev)
             repo.pop(book.name)
+        elif repo[book.name] == book.rev:
+            # TODO: prevent uploading unchanged files
+            db_update(dbx, book.name, book.rev)
+            repo.pop(book.name)
+        else:
+            print('dead end: %s' % book.name)
 
     for spellbook_name in repo:
         if repo[spellbook_name] is None:
@@ -216,6 +217,23 @@ def db_update(dbx, spellbook_name, rev):
 def db_remove(dbx, spellbook_name):
     dbx.files_delete(os.path.join('/', spellbook_name))
     db_repo_remove(spellbook_name)
+
+
+def db_merge(dbx, spellbook_name, rev):
+    spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
+    with open(spellbook_path, 'rU') as fin:
+        local_spells = [json.loads(line) for line in fin]
+
+    metadata, http_resp = dbx.files_download('rev:%s' % rev)
+    local_spells.extend(json.loads(line.decode('utf-8')) for line in http_resp.iter_lines() if
+                        json.loads(line.decode('utf-8')) not in local_spells)
+
+    with open(spellbook_path, 'w') as fout:
+        for val in local_spells:
+            fout.write(json.dumps(val))
+            fout.write('\n')
+
+    db_repo_update(spellbook_name, metadata.rev)
 
 
 def db_download(dbx, spellbook_name):
