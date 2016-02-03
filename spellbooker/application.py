@@ -3,6 +3,7 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 
 import argparse
+import imp
 import json
 import os
 from builtins import *
@@ -15,14 +16,15 @@ if not os.path.exists(CONFIG_DIRECTORY):
     os.makedirs(CONFIG_DIRECTORY)
 
 try:
-    import dropbox
+    imp.find_module('dropbox')
+    dropbox_available = True
 
     DROPBOX_TOKEN_PATH = os.path.join(CONFIG_DIRECTORY, 'dropbox_token')
     DROPBOX_REPO_PATH = os.path.join(MAIN_DIRECTORY, 'dropbox_repo')
     if not os.path.exists(DROPBOX_REPO_PATH):
         os.makedirs(DROPBOX_REPO_PATH)
 except ImportError as e:
-    dropbox = None
+    dropbox_available = False
     pass
 
 
@@ -117,6 +119,8 @@ def command_create(args):
 
 
 def command_dropbox_connect(args):
+    import dropbox
+
     if args.spellbook_name is not None:
         print('ERR: sync is only for all books')
         return
@@ -178,6 +182,7 @@ def db_load_token():
 
 
 def db_sync():
+    import dropbox
     dbx = dropbox.Dropbox(db_load_token())
     repo = db_repo_load()
     for book in dbx.files_list_folder('').entries:
@@ -203,6 +208,7 @@ def db_sync():
 
 
 def db_upload(dbx, spellbook_name):
+    import dropbox
     spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
     with open(spellbook_path, 'rU') as fout:
         response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=dropbox.files.WriteMode.add)
@@ -211,6 +217,7 @@ def db_upload(dbx, spellbook_name):
 
 
 def db_update(dbx, spellbook_name, rev):
+    import dropbox
     spellbook_path = os.path.join(MAIN_DIRECTORY, spellbook_name)
     with open(spellbook_path, 'rU') as fout:
         response = dbx.files_upload(fout, os.path.join('/', spellbook_name), mode=dropbox.files.WriteMode.update(rev))
@@ -273,7 +280,7 @@ def prepare_parser():
     parser_create = subparsers.add_parser('create', help='create new spellbook')
     parser_create.set_defaults(func=command_create)
 
-    if dropbox:
+    if dropbox_available:
         parser_db_connect = subparsers.add_parser('connectdb', help='connect to dropbox storage')
         parser_db_connect.set_defaults(func=command_dropbox_connect)
 
