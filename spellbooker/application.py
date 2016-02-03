@@ -7,7 +7,7 @@ import json
 import os
 from builtins import *
 
-VERSION = '1.1.2'
+VERSION = '1.1.3'
 
 MAIN_DIRECTORY = os.path.join(os.path.expanduser('~'), '.spellbook')
 CONFIG_DIRECTORY = os.path.join(MAIN_DIRECTORY, 'config')
