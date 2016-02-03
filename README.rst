@@ -43,7 +43,8 @@ add spell to your spellbook:
 search for it:
 
 .. code::
-$ spellbook aux search tar
+
+    $ spellbook aux search tar
     tar -xvzf file.tar.gz
 
 
@@ -161,7 +162,8 @@ dropbox support
 just install dropbox or install spellbook with dropbox
 
 .. code::
-$ pip install spellbook[with_dropbox]
+
+    $ pip install spellbook[with_dropbox]
     or
     $ pip install spellbook dropbox
 
@@ -173,7 +175,8 @@ connect to dropbox
 ------------------
 
 .. code::
-$ spellbook - connectdb
+
+    $ spellbook - connectdb
     1. Go to: https://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id=ow3gosk8pb9bhkr
     2. Click "Allow" (you might have to log in first)
     3. Copy the authorization code.
@@ -186,7 +189,8 @@ sync spellbooks with dropbox
 all spellbooks will be synchronized with yours dropbox account
 
 .. code::
-$ spellbook - sync
+
+    $ spellbook - sync
 
 
 
