@@ -55,7 +55,7 @@ def save_spell(database_path, cmd, desc):
         'desc': desc
     }
     with open(database_path, 'a') as fout:
-        fout.write(json.dumps(val))
+        fout.write(str(json.dumps(val)))
         fout.write('\n')
 
 
@@ -234,7 +234,7 @@ def db_merge(dbx, spellbook_name, rev):
 
     with open(spellbook_path, 'w') as fout:
         for val in local_spells:
-            fout.write(json.dumps(val))
+            fout.write(str(json.dumps(val)))
             fout.write('\n')
 
     db_repo_update(spellbook_name, metadata.rev)
