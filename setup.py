@@ -4,7 +4,7 @@ import os
 
 from setuptools import setup
 
-from spellbooker.application import VERSION
+from spellbooker import VERSION
 
 here = os.path.abspath(os.path.dirname(__file__))
 
