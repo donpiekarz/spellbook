@@ -4,7 +4,13 @@ spellbook
 
 store and search command lines
 
-[Wpis na blogu (Blog post)](http://donpiekarz.pepiniera.net/2016/02/11/spellbook/)
+Wpis na blogu / Blog post:
+
+http://donpiekarz.pepiniera.net/2016/02/11/spellbook/
+
+PyPi:
+
+https://pypi.python.org/pypi/spellbook
 
 -------
 problem
