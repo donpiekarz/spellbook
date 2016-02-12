@@ -4,6 +4,8 @@ spellbook
 
 store and search command lines
 
+[Wpis na blogu (Blog post)](http://donpiekarz.pepiniera.net/2016/02/11/spellbook/)
+
 -------
 problem
 -------
@@ -180,7 +182,7 @@ connect to dropbox
     1. Go to: https://www.dropbox.com/1/oauth2/authorize?response_type=code&client_id=ow3gosk8pb9bhkr
     2. Click "Allow" (you might have to log in first)
     3. Copy the authorization code.
-    provide the authorization code here>> oh4dTc9F_fgAAAAAAAAC3fovgKZ7cPL65mS5Ajxevug
+    provide the authorization code here>> oh4dTc9F_fgAAAAAAAAC3fovgKZ7cPL65nS5Ajxeaer
     successfully linked account:  DonPiekarz
 
 sync spellbooks with dropbox
