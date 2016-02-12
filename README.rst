@@ -2,7 +2,7 @@
 spellbook
 =========
 
-store and search command lines
+search and store command lines
 
 Wpis na blogu / Blog post:
 
