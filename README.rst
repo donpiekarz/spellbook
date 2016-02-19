@@ -2,11 +2,11 @@
 spellbook
 =========
 
-search and store command lines
+search and store command lines and synchronize with dropbox!
 
 Wpis na blogu / Blog post:
 
-http://donpiekarz.pepiniera.net/2016/02/11/spellbook/
+http://donpiekarz.pepiniera.net/2016/02/11/spellbook/?o=gh
 
 PyPi:
 
@@ -55,6 +55,17 @@ search for it:
     $ spellbook aux search tar
     tar -xvzf file.tar.gz
 
+connect to DropBox:
+
+.. code::
+
+    $ spellbook - connectdb
+
+synchronize all spellbooks with Dropbox:
+
+.. code::
+
+    $ spellbook - sync
 
 documentation
 =============
